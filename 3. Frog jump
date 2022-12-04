@@ -1,0 +1,79 @@
+import java.util.Arrays;
+
+public class frogJump {
+    public static int recr(int i, int arr[]) {
+        if (i == 0)
+            return 0;
+
+        int left = recr(i - 1, arr) + Math.abs(arr[i] - arr[i - 1]);
+        int right = Integer.MAX_VALUE;
+        if (i > 1) {
+            right = recr(i - 2, arr) + Math.abs(arr[i] - arr[i - 2]);
+        }
+
+        return Math.min(left, right);
+    }
+
+    public static int memo(int i, int arr[], int dp[]) {
+
+        if (i == 0)
+            return 0;
+
+        if (dp[i] != -1)
+            return dp[i];
+
+        int left = memo(i - 1, arr, dp) + Math.abs(arr[i] - arr[i - 1]);
+        int right = Integer.MAX_VALUE;
+        if (i > 1) {
+            right = memo(i - 2, arr, dp) + Math.abs(arr[i] - arr[i - 2]);
+        }
+
+        return dp[i] = Math.min(left, right);
+    }
+
+    public static int tabu(int i, int arr[]) {
+        int dp[] = new int[i + 1];
+        dp[0] = 0;
+
+        for (int j = 1; j <= i; j++) {
+            int fs = dp[j - 1] + Math.abs(arr[j] - arr[j - 1]);
+            int ss = Integer.MAX_VALUE;
+            if (j > 1) {
+                ss = dp[j - 2] + Math.abs(arr[j] - arr[j - 2]);
+            }
+            dp[j] = Math.min(fs, ss);
+        }
+        return dp[i];
+    }
+
+    public static int sopt(int i, int arr[]) {
+        int prev = 0;
+        int prev2 = 0;
+
+        for (int j = 1; j <= i; j++) {
+            int fs = prev + Math.abs(arr[j] - arr[j - 1]);
+            int ss = Integer.MAX_VALUE;
+            if (j > 1) {
+                ss = prev2 + Math.abs(arr[j] - arr[j - 2]);
+            }
+            int curi = Math.min(fs, ss);
+            prev2 = prev;
+            prev = curi;
+        }
+
+        return prev;
+    }
+
+    public static void main(String[] args) {
+        int arr[] = { 30, 10, 60, 10, 60, 50 };
+        System.out.println(recr(5, arr));
+
+        int dp[] = new int[6];
+        Arrays.fill(dp, -1);
+        System.out.println(memo(5, arr, dp));
+
+        System.out.println(tabu(5, arr));
+
+        System.out.println(sopt(5, arr));
+    }
+}
